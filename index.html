@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MR. REMINDER - Your Personal Task Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --primary-dark: #5649c0;
+            --secondary: #00cec9;
+            --danger: #ff7675;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --dark: #2d3436;
+            --light: #f5f6fa;
+            --gray: #b2bec3;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: var(--dark);
+        }
+        
+        .app-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .app-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .app-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .app-header h1::before {
+            content: "⏰";
+            margin-right: 15px;
+            font-size: 2rem;
+        }
+        
+        .app-header p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .app-content {
+            padding: 30px;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .input-field {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        input, select, button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        input, select {
+            background-color: var(--light);
+            border: 2px solid transparent;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+        }
+        
+        button {
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #00997d;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #e66867;
+            transform: translateY(-2px);
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+        
+        .btn-warning:hover {
+            background-color: #f5b84d;
+            transform: translateY(-2px);
+        }
+        
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .task-item {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border-left: 5px solid var(--gray);
+        }
+        
+        .task-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .task-item.completed {
+            opacity: 0.7;
+            background-color: #f8f9fa;
+        }
+        
+        .task-checkbox {
+            min-width: 25px;
+            height: 25px;
+            accent-color: var(--success);
+            cursor: pointer;
+        }
+        
+        .task-content {
+            flex: 1;
+        }
+        
+        .task-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            word-break: break-word;
+        }
+        
+        .task-title.completed {
+            text-decoration: line-through;
+            color: var(--gray);
+        }
+        
+        .task-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        
+        .task-due {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .task-priority {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .priority-high {
+            background-color: rgba(255, 118, 117, 0.2);
+            color: var(--danger);
+            border-left-color: var(--danger);
+        }
+        
+        .priority-medium {
+            background-color: rgba(253, 203, 110, 0.2);
+            color: #e17055;
+            border-left-color: #e17055;
+        }
+        
+        .priority-low {
+            background-color: rgba(0, 184, 148, 0.2);
+            color: var(--success);
+            border-left-color: var(--success);
+        }
+        
+        .task-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .task-actions button {
+            width: auto;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            border-radius: 8px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+        
+        .empty-state img {
+            width: 150px;
+            opacity: 0.7;
+            margin-bottom: 20px;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            padding: 15px 25px;
+            background: var(--dark);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateX(150%);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background: var(--success);
+        }
+        
+        .notification.warning {
+            background: var(--warning);
+            color: var(--dark);
+        }
+        
+        .notification.error {
+            background: var(--danger);
+        }
+        
+        .notification-icon {
+            font-size: 1.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .app-header h1 {
+                font-size: 2rem;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .task-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .task-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            
+            .task-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="app-header">
+            <h1>MR. REMINDER</h1>
+            <p>Your personal task manager with smart reminders</p>
+        </div>
+        
+        <div class="app-content">
+            <div class="input-group">
+                <div class="input-field">
+                    <input type="text" id="taskInput" placeholder="What needs to be done?">
+                </div>
+                <div class="input-field">
+                    <input type="datetime-local" id="dueDateInput">
+                </div>
+                <div class="input-field">
+                    <select id="priorityInput">
+                        <option value="low">Low Priority</option>
+                        <option value="medium" selected>Medium Priority</option>
+                        <option value="high">High Priority</option>
+                    </select>
+                </div>
+                <div class="input-field">
+                    <button id="addTaskBtn" class="btn-primary">
+                        <span>➕</span> Add Task
+                    </button>
+                </div>
+            </div>
+            
+            <div class="task-list" id="taskList">
+                <!-- Tasks will be added here -->
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">
+        <span class="notification-icon" id="notificationIcon">⏰</span>
+        <span id="notificationText"></span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const taskInput = document.getElementById('taskInput');
+            const dueDateInput = document.getElementById('dueDateInput');
+            const priorityInput = document.getElementById('priorityInput');
+            const addTaskBtn = document.getElementById('addTaskBtn');
+            const taskList = document.getElementById('taskList');
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            const notificationIcon = document.getElementById('notificationIcon');
+            
+            // Initialize tasks array from localStorage or empty array
+            let tasks = JSON.parse(localStorage.getItem('mr-reminder-tasks')) || [];
+            
+            // Check for reminders every minute
+            setInterval(checkReminders, 60000);
+            
+            // Render initial tasks
+            renderTasks();
+            
+            // Add task event listener
+            addTaskBtn.addEventListener('click', addTask);
+            taskInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addTask();
+                }
+            });
+            
+            // Function to add a new task
+            function addTask() {
+                const title = taskInput.value.trim();
+                const dueDate = dueDateInput.value;
+                const priority = priorityInput.value;
+                
+                if (!title) {
+                    showNotification('Please enter a task title', 'error');
+                    return;
+                }
+                
+                const newTask = {
+                    id: Date.now(),
+                    title,
+                    dueDate,
+                    priority,
+                    completed: false,
+                    createdAt: new Date().toISOString()
+                };
+                
+                tasks.push(newTask);
+                saveTasks();
+                renderTasks();
+                
+                // Clear inputs
+                taskInput.value = '';
+                dueDateInput.value = '';
+                priorityInput.value = 'medium';
+                taskInput.focus();
+                
+                showNotification('Task added successfully!', 'success');
+            }
+            
+            // Function to render tasks
+            function renderTasks() {
+                if (tasks.length === 0) {
+                    taskList.innerHTML = `
+                        <div class="empty-state">
+                            <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23b2bec3'><path d='M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'/></svg>" alt="Empty">
+                            <h3>No tasks yet</h3>
+                            <p>Add your first task to get started!</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Sort tasks: incomplete first, then by priority (high to low), then by due date
+                tasks.sort((a, b) => {
+                    if (a.completed !== b.completed) {
+                        return a.completed ? 1 : -1;
+                    }
+                    if (a.priority !== b.priority) {
+                        const priorityOrder = { high: 3, medium: 2, low: 1 };
+                        return priorityOrder[b.priority] - priorityOrder[a.priority];
+                    }
+                    if (a.dueDate && b.dueDate) {
+                        return new Date(a.dueDate) - new Date(b.dueDate);
+                    }
+                    return new Date(b.createdAt) - new Date(a.createdAt);
+                });
+                
+                taskList.innerHTML = '';
+                
+                tasks.forEach(task => {
+                    const taskElement = document.createElement('div');
+                    taskElement.className = `task-item priority-${task.priority} ${task.completed ? 'completed' : ''}`;
+                    taskElement.dataset.id = task.id;
+                    
+                    const dueDate = task.dueDate ? new Date(task.dueDate) : null;
+                    const dueDateString = dueDate ? dueDate.toLocaleString() : 'No due date';
+                    const timeLeft = dueDate ? getTimeLeftString(dueDate) : '';
+                    
+                    taskElement.innerHTML = `
+                        <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''}>
+                        <div class="task-content">
+                            <div class="task-title ${task.completed ? 'completed' : ''}">${task.title}</div>
+                            <div class="task-meta">
+                                <span class="task-due">📅 ${dueDateString} ${timeLeft}</span>
+                                <span class="task-priority priority-${task.priority}">${task.priority}</span>
+                            </div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="btn-warning">${task.completed ? 'Undo' : 'Complete'}</button>
+                            <button class="btn-danger">Delete</button>
+                        </div>
+                    `;
+                    
+                    taskList.appendChild(taskElement);
+                    
+                    // Add event listeners
+                    const checkbox = taskElement.querySelector('.task-checkbox');
+                    const completeBtn = taskElement.querySelector('.btn-warning');
+                    const deleteBtn = taskElement.querySelector('.btn-danger');
+                    
+                    checkbox.addEventListener('change', () => toggleComplete(task.id));
+                    completeBtn.addEventListener('click', () => toggleComplete(task.id));
+                    deleteBtn.addEventListener('click', () => deleteTask(task.id));
+                });
+            }
+            
+            // Function to get time left string
+            function getTimeLeftString(dueDate) {
+                const now = new Date();
+                const diff = dueDate - now;
+                
+                if (diff <= 0) {
+                    return '(Overdue)';
+                }
+                
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                
+                if (days > 0) {
+                    return `(${days}d ${hours}h left)`;
+                }
+                if (hours > 0) {
+                    return `(${hours}h left)`;
+                }
+                return '(Due soon)';
+            }
+            
+            // Function to toggle task completion status
+            function toggleComplete(taskId) {
+                tasks = tasks.map(task => {
+                    if (task.id === taskId) {
+                        return { ...task, completed: !task.completed };
+                    }
+                    return task;
+                });
+                saveTasks();
+                renderTasks();
+                
+                const task = tasks.find(t => t.id === taskId);
+                if (task.completed) {
+                    showNotification(`Task completed: "${task.title}"`, 'success');
+                }
+            }
+            
+            // Function to delete a task
+            function deleteTask(taskId) {
+                const task = tasks.find(t => t.id === taskId);
+                tasks = tasks.filter(t => t.id !== taskId);
+                saveTasks();
+                renderTasks();
+                showNotification(`Task deleted: "${task.title}"`, 'error');
+            }
+            
+            // Function to save tasks to localStorage
+            function saveTasks() {
+                localStorage.setItem('mr-reminder-tasks', JSON.stringify(tasks));
+            }
+            
+            // Function to show notification
+            function showNotification(message, type = 'info') {
+                notificationText.textContent = message;
+                notification.className = 'notification show ' + type;
+                
+                // Set appropriate icon
+                if (type === 'success') {
+                    notificationIcon.textContent = '✓';
+                } else if (type === 'error') {
+                    notificationIcon.textContent = '✕';
+                } else if (type === 'warning') {
+                    notificationIcon.textContent = '⚠';
+                } else {
+                    notificationIcon.textContent = '⏰';
+                }
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+            
+            // Function to check for due tasks and show reminders
+            function checkReminders() {
+                const now = new Date();
+                
+                tasks.forEach(task => {
+                    if (!task.completed && task.dueDate) {
+                        const dueDate = new Date(task.dueDate);
+                        const timeDiff = dueDate - now;
+                        
+                        // Show notification if task is due within 15 minutes
+                        if (timeDiff > 0 && timeDiff <= 15 * 60 * 1000) {
+                            showNotification(`⏰ Reminder: "${task.title}" is due in 15 minutes!`, 'warning');
+                        }
+                        
+                        // Show notification if task is overdue
+                        if (timeDiff <= 0 && timeDiff > -5 * 60 * 1000) {
+                            showNotification(`❗ Urgent: "${task.title}" is now overdue!`, 'error');
+                        }
+                    }
+                });
+            }
+            
+            // Initial check for reminders
+            checkReminders();
+        });
+    </script>
+</body>
+</html>
